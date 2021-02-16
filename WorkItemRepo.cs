@@ -21,9 +21,9 @@ namespace WebHooksDevOps
             _appSettings = appSettings;
         }
 
-        public Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem UpdateWorkItem(JsonPatchDocument patchDocument, PayloadViewModel vm)
+        public Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem UpdateWorkItem(JsonPatchDocument patchDocument, ViewModels.WorkItem vm)
         {
-            string pat = vm.pat;
+            string pat = "asdsadsad";
             Uri baseUri = new Uri("");
 
             VssCredentials clientCredentials = new VssCredentials(new VssBasicCredential("username", pat));
@@ -34,7 +34,7 @@ namespace WebHooksDevOps
 
             try
             {
-                result = client.UpdateWorkItemAsync(patchDocument, vm.id).Result;
+                result = client.UpdateWorkItemAsync(patchDocument, (int)vm.Resource.Id).Result;
             }
             catch (Exception ex)
             {
@@ -53,6 +53,6 @@ namespace WebHooksDevOps
 
     public interface IWorkItemRepo
     {
-        Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem UpdateWorkItem(JsonPatchDocument patchDocument, ViewModels.PayloadViewModel vm);
+        Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem UpdateWorkItem(JsonPatchDocument patchDocument, ViewModels.WorkItem vm);
     }
 }
