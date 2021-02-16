@@ -3,12 +3,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.VisualStudio.Services.WebApi.Patch.Json;
 using Microsoft.VisualStudio.Services.WebApi.Patch;
-using Newtonsoft.Json.Linq;
-using System.Text;
 using WebHooksDevOps.ViewModels;
 using JsonPatchDocument = Microsoft.VisualStudio.Services.WebApi.Patch.Json.JsonPatchDocument;
 using Microsoft.Extensions.Options;
@@ -26,12 +22,12 @@ namespace WebHooksDevOps.Controllers
 
         private readonly ILogger<WebHooksTFSDevOps> _logger;
         IOptions<AppSettings> _appSettings;
-        IWorkItemRepo _workItemRepo;
-        public WebHooksTFSDevOps(ILogger<WebHooksTFSDevOps> logger, IOptions<AppSettings> appSettings, IWorkItemRepo WorkItemRepo)
+        //IWorkItemRepo _workItemRepo;
+        public WebHooksTFSDevOps(ILogger<WebHooksTFSDevOps> logger, IOptions<AppSettings> appSettings/*, IWorkItemRepo WorkItemRepo*/)
         {
             _logger = logger;
             _appSettings = appSettings;
-            _workItemRepo = WorkItemRepo;
+            //_workItemRepo = WorkItemRepo;
         }
 
         [HttpGet]
@@ -49,7 +45,7 @@ namespace WebHooksDevOps.Controllers
 
         [HttpPost]
         //[Route("workitem/new")]
-        public IActionResult Post([FromBody] WorkItem vm)
+        public IActionResult Post([FromBody] WorkItemModel vm)
         {
             string tags = "";
 
@@ -63,17 +59,16 @@ namespace WebHooksDevOps.Controllers
                 return new StatusCodeResult(500);
             }
             OldNewValuePair assignedTo = vm.Resource.Fields["System.AssignedTo"];
-            string createdBy = vm.Resource.Revision.Fields.SystemCreatedBy.ToString();
-            string teamProject = vm.Resource.Revision.Fields.SystemTeamProject.ToString();
+            //string teamProject = vm.Resource.Revision.Fields.SystemTeamProject.ToString();
 
 
             JsonPatchDocument patchDocument = new JsonPatchDocument
                 {
                     new JsonPatchOperation()
                     {
-                        Operation = Operation.Test,
-                        Path = "/rev",
-                        Value = (vm.Resource.Rev + 1).ToString()
+                        Operation = Operation.Add,
+                        Path = "/fields/System.Title",
+                        Value = "this was the test"
                     }
                 };
             
@@ -84,19 +79,7 @@ namespace WebHooksDevOps.Controllers
                     {
                         Operation = Operation.Add,
                         Path = "/fields/System.AssignedTo",
-                        Value = createdBy
-                    }
-                );
-            }
-
-            if (!string.IsNullOrEmpty(tags))
-            {
-                patchDocument.Add(
-                    new JsonPatchOperation()
-                    {
-                        Operation = Operation.Add,
-                        Path = "/fields/System.Tags",
-                        Value = tags
+                        Value = "Shahbaz Khan"
                     }
                 );
             }
@@ -106,11 +89,12 @@ namespace WebHooksDevOps.Controllers
                 {
                     Operation = Operation.Add,
                     Path = "/fields/System.IterationPath",
-                    Value = teamProject
+                    Value = "ADUP Request Portal\\Sprint 1"
                 }
             );
-
-            var result = _workItemRepo.UpdateWorkItem(patchDocument, vm);
+           
+              
+            WorkItemRepo.CreateWorkItem(patchDocument, vm);
 
             return new OkResult();
 
