@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace WebHooksDevOps.ViewModels
 {
-    public partial class WorkItem
+    public partial class WorkItemModel
     {
         [JsonPropertyName("subscriptionId")]
         public Guid SubscriptionId { get; set; }
