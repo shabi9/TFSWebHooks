@@ -27,11 +27,11 @@ namespace WebHooksDevOps.Controllers
         private readonly ILogger<WebHooksTFSDevOps> _logger;
         IOptions<AppSettings> _appSettings;
         IWorkItemRepo _workItemRepo;
-        public WebHooksTFSDevOps(ILogger<WebHooksTFSDevOps> logger, IOptions<AppSettings> appSettings)
+        public WebHooksTFSDevOps(ILogger<WebHooksTFSDevOps> logger, IOptions<AppSettings> appSettings, IWorkItemRepo workItemRepo)
         {
             _logger = logger;
             _appSettings = appSettings;
-          //  _workItemRepo = workItemRepo;
+            _workItemRepo = workItemRepo;
         }
 
         [HttpGet]
@@ -52,8 +52,6 @@ namespace WebHooksDevOps.Controllers
         public IActionResult Post([FromBody] WorkItem vm)
         {
             string tags = "";
-            //string authHeader = "";
-            string pat = "";
 
             if (vm.EventType != "workitem.created")
             {
@@ -64,51 +62,55 @@ namespace WebHooksDevOps.Controllers
             {
                 return new StatusCodeResult(500);
             }
+            OldNewValuePair assignedTo = vm.Resource.Fields["System.AssignedTo"];
+            OldNewValuePair createdBy = vm.Resource.Fields["System.CreatedBy"];
+            string teamProject = vm.Resource.Revision.Fields.SystemTeamProject.ToString();
 
-            //JsonPatchDocument patchDocument = new JsonPatchDocument
-            //    {
-            //        new JsonPatchOperation()
-            //        {
-            //            Operation = Operation.Test,
-            //            Path = "/rev",
-            //            Value = (vm.rev + 1).ToString()
-            //        }
-            //    };
 
-            //if (string.IsNullOrEmpty(vm.Resource.Fields.SystemAssignedTo.NewValue))
-            //{
-            //    patchDocument.Add(
-            //        new JsonPatchOperation()
-            //        {
-            //            Operation = Operation.Add,
-            //            Path = "/fields/System.AssignedTo",
-            //            Value = vm.createdBy
-            //        }
-            //    );
-            //}
+            JsonPatchDocument patchDocument = new JsonPatchDocument
+                {
+                    new JsonPatchOperation()
+                    {
+                        Operation = Operation.Test,
+                        Path = "/rev",
+                        Value = (vm.Resource.Rev + 1).ToString()
+                    }
+                };
+            
+            if (string.IsNullOrEmpty(assignedTo.NewValue))
+            {
+                patchDocument.Add(
+                    new JsonPatchOperation()
+                    {
+                        Operation = Operation.Add,
+                        Path = "/fields/System.AssignedTo",
+                        Value = createdBy.NewValue
+                    }
+                );
+            }
 
-            //if (!string.IsNullOrEmpty(tags))
-            //{
-            //    patchDocument.Add(
-            //        new JsonPatchOperation()
-            //        {
-            //            Operation = Operation.Add,
-            //            Path = "/fields/System.Tags",
-            //            Value = tags
-            //        }
-            //    );
-            //}
+            if (!string.IsNullOrEmpty(tags))
+            {
+                patchDocument.Add(
+                    new JsonPatchOperation()
+                    {
+                        Operation = Operation.Add,
+                        Path = "/fields/System.Tags",
+                        Value = tags
+                    }
+                );
+            }
 
-            //patchDocument.Add(
-            //    new JsonPatchOperation()
-            //    {
-            //        Operation = Operation.Add,
-            //        Path = "/fields/System.IterationPath",
-            //        Value = vm.teamProject
-            //    }
-            //);
+            patchDocument.Add(
+                new JsonPatchOperation()
+                {
+                    Operation = Operation.Add,
+                    Path = "/fields/System.IterationPath",
+                    Value = teamProject
+                }
+            );
 
-            //var result = _workItemRepo.UpdateWorkItem(patchDocument, vm);
+            var result = _workItemRepo.UpdateWorkItem(patchDocument, vm);
 
             return new OkResult();
 
