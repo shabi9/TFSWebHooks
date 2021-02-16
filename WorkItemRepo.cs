@@ -21,7 +21,7 @@ namespace WebHooksDevOps
             _appSettings = appSettings;
         }
 
-        public WorkItem UpdateWorkItem(JsonPatchDocument patchDocument, PayloadViewModel vm)
+        public Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem UpdateWorkItem(JsonPatchDocument patchDocument, PayloadViewModel vm)
         {
             string pat = vm.pat;
             Uri baseUri = new Uri("");
@@ -30,7 +30,7 @@ namespace WebHooksDevOps
             VssConnection connection = new VssConnection(baseUri, clientCredentials);
 
             WorkItemTrackingHttpClient client = connection.GetClient<WorkItemTrackingHttpClient>();
-            WorkItem result = null;
+            Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem result = null;
 
             try
             {
@@ -53,6 +53,6 @@ namespace WebHooksDevOps
 
     public interface IWorkItemRepo
     {
-        WorkItem UpdateWorkItem(JsonPatchDocument patchDocument, ViewModels.PayloadViewModel vm);
+        Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem UpdateWorkItem(JsonPatchDocument patchDocument, ViewModels.PayloadViewModel vm);
     }
 }

@@ -26,10 +26,12 @@ namespace WebHooksDevOps.Controllers
 
         private readonly ILogger<WebHooksTFSDevOps> _logger;
         IOptions<AppSettings> _appSettings;
+        IWorkItemRepo _workItemRepo;
         public WebHooksTFSDevOps(ILogger<WebHooksTFSDevOps> logger, IOptions<AppSettings> appSettings)
         {
             _logger = logger;
             _appSettings = appSettings;
+          //  _workItemRepo = workItemRepo;
         }
 
         [HttpGet]
@@ -47,68 +49,64 @@ namespace WebHooksDevOps.Controllers
 
         [HttpPost]
         //[Route("workitem/new")]
-        public IActionResult Post([FromBody] JObject payload)
+        public IActionResult Post([FromBody] WorkItem vm)
         {
             string tags = "";
             //string authHeader = "";
             string pat = "";
 
-
-            PayloadViewModel vm = this.BuildPayloadViewModel(payload);
-            vm.pat = (!string.IsNullOrEmpty(pat)) ? pat : _appSettings.Value.AzureDevOpsToken;
-
-            if (vm.eventType != "workitem.created")
+            if (vm.EventType != "workitem.created")
             {
                 return new OkResult();
             }
 
-            if (vm.id == -1)
+            if (vm.Resource.WorkItemId == -1)
             {
                 return new StatusCodeResult(500);
             }
 
-            JsonPatchDocument patchDocument = new JsonPatchDocument
-                {
-                    new JsonPatchOperation()
-                    {
-                        Operation = Operation.Test,
-                        Path = "/rev",
-                        Value = (vm.rev + 1).ToString()
-                    }
-                };
+            //JsonPatchDocument patchDocument = new JsonPatchDocument
+            //    {
+            //        new JsonPatchOperation()
+            //        {
+            //            Operation = Operation.Test,
+            //            Path = "/rev",
+            //            Value = (vm.rev + 1).ToString()
+            //        }
+            //    };
 
-            if (string.IsNullOrEmpty(vm.assignedTo))
-            {
-                patchDocument.Add(
-                    new JsonPatchOperation()
-                    {
-                        Operation = Operation.Add,
-                        Path = "/fields/System.AssignedTo",
-                        Value = vm.createdBy
-                    }
-                );
-            }
+            //if (string.IsNullOrEmpty(vm.Resource.Fields.SystemAssignedTo.NewValue))
+            //{
+            //    patchDocument.Add(
+            //        new JsonPatchOperation()
+            //        {
+            //            Operation = Operation.Add,
+            //            Path = "/fields/System.AssignedTo",
+            //            Value = vm.createdBy
+            //        }
+            //    );
+            //}
 
-            if (!string.IsNullOrEmpty(tags))
-            {
-                patchDocument.Add(
-                    new JsonPatchOperation()
-                    {
-                        Operation = Operation.Add,
-                        Path = "/fields/System.Tags",
-                        Value = tags
-                    }
-                );
-            }
+            //if (!string.IsNullOrEmpty(tags))
+            //{
+            //    patchDocument.Add(
+            //        new JsonPatchOperation()
+            //        {
+            //            Operation = Operation.Add,
+            //            Path = "/fields/System.Tags",
+            //            Value = tags
+            //        }
+            //    );
+            //}
 
-            patchDocument.Add(
-                new JsonPatchOperation()
-                {
-                    Operation = Operation.Add,
-                    Path = "/fields/System.IterationPath",
-                    Value = vm.teamProject
-                }
-            );
+            //patchDocument.Add(
+            //    new JsonPatchOperation()
+            //    {
+            //        Operation = Operation.Add,
+            //        Path = "/fields/System.IterationPath",
+            //        Value = vm.teamProject
+            //    }
+            //);
 
             //var result = _workItemRepo.UpdateWorkItem(patchDocument, vm);
 
@@ -116,20 +114,20 @@ namespace WebHooksDevOps.Controllers
 
         }
 
-        private PayloadViewModel BuildPayloadViewModel(JObject body)
-        {
-            PayloadViewModel vm = new PayloadViewModel();
+        //private PayloadViewModel BuildPayloadViewModel(JObject body)
+        //{
+        //    PayloadViewModel vm = new PayloadViewModel();
 
-            vm.id = body["resource"]["id"] == null ? -1 : Convert.ToInt32(body["resource"]["id"].ToString());
-            vm.eventType = body["eventType"] == null ? null : body["eventType"].ToString();
-            vm.rev = body["resource"]["rev"] == null ? -1 : Convert.ToInt32(body["resource"]["rev"].ToString());
-            vm.url = body["resource"]["url"] == null ? null : body["resource"]["url"].ToString();
-            //vm.organization = org;
-            vm.teamProject = body["resource"]["fields"]["System.AreaPath"] == null ? null : body["resource"]["fields"]["System.AreaPath"].ToString();
-            vm.createdBy = body["resource"]["fields"]["System.CreatedBy"]["displayName"] == null ? null : body["resource"]["fields"]["System.CreatedBy"]["displayName"].ToString();
-            vm.assignedTo = body["resource"]["fields"]["System.AssignedTo"] == null ? null : body["resource"]["fields"]["System.Assigned"].ToString();
+        //    vm.id = body["resource"]["id"] == null ? -1 : Convert.ToInt32(body["resource"]["id"].ToString());
+        //    vm.eventType = body["eventType"] == null ? null : body["eventType"].ToString();
+        //    vm.rev = body["resource"]["rev"] == null ? -1 : Convert.ToInt32(body["resource"]["rev"].ToString());
+        //    vm.url = body["resource"]["url"] == null ? null : body["resource"]["url"].ToString();
+        //    //vm.organization = org;
+        //    vm.teamProject = body["resource"]["fields"]["System.AreaPath"] == null ? null : body["resource"]["fields"]["System.AreaPath"].ToString();
+        //    vm.createdBy = body["resource"]["fields"]["System.CreatedBy"]["displayName"] == null ? null : body["resource"]["fields"]["System.CreatedBy"]["displayName"].ToString();
+        //    vm.assignedTo = body["resource"]["fields"]["System.AssignedTo"] == null ? null : body["resource"]["fields"]["System.Assigned"].ToString();
 
-            return vm;
-        }        
+        //    return vm;
+        //}        
     }
 }
