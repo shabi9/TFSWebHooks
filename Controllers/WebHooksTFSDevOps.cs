@@ -27,11 +27,11 @@ namespace WebHooksDevOps.Controllers
         private readonly ILogger<WebHooksTFSDevOps> _logger;
         IOptions<AppSettings> _appSettings;
         IWorkItemRepo _workItemRepo;
-        public WebHooksTFSDevOps(ILogger<WebHooksTFSDevOps> logger, IOptions<AppSettings> appSettings, IWorkItemRepo workItemRepo)
+        public WebHooksTFSDevOps(ILogger<WebHooksTFSDevOps> logger, IOptions<AppSettings> appSettings, IWorkItemRepo WorkItemRepo)
         {
             _logger = logger;
             _appSettings = appSettings;
-            _workItemRepo = workItemRepo;
+            _workItemRepo = WorkItemRepo;
         }
 
         [HttpGet]
@@ -63,7 +63,7 @@ namespace WebHooksDevOps.Controllers
                 return new StatusCodeResult(500);
             }
             OldNewValuePair assignedTo = vm.Resource.Fields["System.AssignedTo"];
-            OldNewValuePair createdBy = vm.Resource.Fields["System.CreatedBy"];
+            string createdBy = vm.Resource.Revision.Fields.SystemCreatedBy.ToString();
             string teamProject = vm.Resource.Revision.Fields.SystemTeamProject.ToString();
 
 
@@ -84,7 +84,7 @@ namespace WebHooksDevOps.Controllers
                     {
                         Operation = Operation.Add,
                         Path = "/fields/System.AssignedTo",
-                        Value = createdBy.NewValue
+                        Value = createdBy
                     }
                 );
             }

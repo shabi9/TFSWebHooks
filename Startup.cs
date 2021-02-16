@@ -28,6 +28,7 @@ namespace WebHooksDevOps
         {
 
             services.AddControllers();
+            services.AddScoped<IWorkItemRepo, WorkItemRepo>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebHooksDevOps", Version = "v1" });
