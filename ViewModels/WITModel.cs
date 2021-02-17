@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -8,7 +9,8 @@ using Newtonsoft.Json.Linq;
 
 namespace WebHooksDevOps.ViewModels
 {
-    public partial class WorkItemModel
+
+    public class BaseWorkItemModel
     {
         [JsonPropertyName("subscriptionId")]
         public Guid SubscriptionId { get; set; }
@@ -31,8 +33,7 @@ namespace WebHooksDevOps.ViewModels
         [JsonPropertyName("detailedMessage")]
         public Message DetailedMessage { get; set; }
 
-        [JsonPropertyName("resource")]
-        public Resource Resource { get; set; }
+       
 
         [JsonPropertyName("resourceVersion")]
         public string ResourceVersion { get; set; }
@@ -42,6 +43,20 @@ namespace WebHooksDevOps.ViewModels
 
         [JsonPropertyName("createdDate")]
         public DateTime CreatedDate { get; set; }
+
+    }
+    public partial class CreateWorkItemModel:BaseWorkItemModel
+    {
+        [JsonPropertyName("resource")]
+        public CreateResource Resource { get; set; }
+
+    }
+
+    public partial class UpdateWorkItemModel : BaseWorkItemModel
+    {
+        [JsonPropertyName("resource")]
+        public UpdateResource Resource { get; set; }
+
     }
 
     public partial class Message
@@ -56,7 +71,7 @@ namespace WebHooksDevOps.ViewModels
         public string Markdown { get; set; }
     }
 
-    public partial class Resource
+    public class BaseResource
     {
         [JsonPropertyName("id")]
         public long Id { get; set; }
@@ -73,8 +88,7 @@ namespace WebHooksDevOps.ViewModels
         [JsonPropertyName("revisedDate")]
         public DateTime RevisedDate { get; set; }
 
-        [JsonPropertyName("fields")]
-        public Dictionary<string, OldNewValuePair> Fields { get; set; }
+       
 
         [JsonPropertyName("_links")]
         public Links Links { get; set; }
@@ -84,45 +98,61 @@ namespace WebHooksDevOps.ViewModels
 
         [JsonPropertyName("revision")]
         public Revision Revision { get; set; }
+
     }
 
-    public partial class ResourceFields
+    public partial class CreateResource: BaseResource
     {
-        [JsonPropertyName("System.Rev")]
-        public OldNewValuePair SystemRev { get; set; }
+        [JsonPropertyName("fields")]
+        public Dictionary<string, object> Fields { get; set; }
 
-        [JsonPropertyName("System.AuthorizedDate")]
-        public OldNewValuePair SystemAuthorizedDate { get; set; }
-
-        [JsonPropertyName("System.RevisedDate")]
-        public OldNewValuePair SystemRevisedDate { get; set; }
-
-        [JsonPropertyName("System.State")]
-        public OldNewValuePair SystemState { get; set; }
-
-        [JsonPropertyName("System.Reason")]
-        public OldNewValuePair SystemReason { get; set; }
-
-        [JsonPropertyName("System.AssignedTo")]
-        public SystemAssignedTo SystemAssignedTo { get; set; }
-
-        [JsonPropertyName("System.ChangedDate")]
-        public OldNewValuePair SystemChangedDate { get; set; }
-
-        [JsonPropertyName("System.Watermark")]
-        public OldNewValuePair SystemWatermark { get; set; }
-
-        [JsonPropertyName("Microsoft.VSTS.Common.Severity")]
-        public OldNewValuePair MicrosoftVstsCommonSeverity { get; set; }
     }
+
+    public partial class UpdateResource : BaseResource
+    {
+        [JsonPropertyName("fields")]
+        public Dictionary<string, OldNewValuePair> Fields { get; set; }
+
+    }
+
+
+    //public partial class ResourceFields
+    //{
+    //    [JsonPropertyName("System.Rev")]
+    //    public OldNewValuePair SystemRev { get; set; }
+
+    //    [JsonPropertyName("System.AuthorizedDate")]
+    //    public OldNewValuePair SystemAuthorizedDate { get; set; }
+
+    //    [JsonPropertyName("System.RevisedDate")]
+    //    public OldNewValuePair SystemRevisedDate { get; set; }
+
+    //    [JsonPropertyName("System.State")]
+    //    public OldNewValuePair SystemState { get; set; }
+
+    //    [JsonPropertyName("System.Reason")]
+    //    public OldNewValuePair SystemReason { get; set; }
+
+    //    [JsonPropertyName("System.AssignedTo")]
+    //    public SystemAssignedTo SystemAssignedTo { get; set; }
+
+    //    [JsonPropertyName("System.ChangedDate")]
+    //    public OldNewValuePair SystemChangedDate { get; set; }
+
+    //    [JsonPropertyName("System.Watermark")]
+    //    public OldNewValuePair SystemWatermark { get; set; }
+
+    //    [JsonPropertyName("Microsoft.VSTS.Common.Severity")]
+    //    public OldNewValuePair MicrosoftVstsCommonSeverity { get; set; }
+    //}
 
     public partial class OldNewValuePair
     {
         [JsonPropertyName("oldValue")]
-        public string OldValue { get; set; }
+        public JsonElement OldValue { get; set; }
 
         [JsonPropertyName("newValue")]
-        public string NewValue { get; set; }
+        public JsonElement NewValue { get; set; }
     }
 
     public partial class SystemAssignedTo
@@ -187,14 +217,16 @@ namespace WebHooksDevOps.ViewModels
         [JsonPropertyName("System.CreatedDate")]
         public DateTime SystemCreatedDate { get; set; }
 
+        [System.Text.Json.Serialization.JsonIgnore]
         [JsonPropertyName("System.CreatedBy")]
-        public string SystemCreatedBy { get; set; }
+        public JsonElement SystemCreatedBy { get; set; }
 
         [JsonPropertyName("System.ChangedDate")]
         public DateTime SystemChangedDate { get; set; }
 
+        [System.Text.Json.Serialization.JsonIgnore]
         [JsonPropertyName("System.ChangedBy")]
-        public string SystemChangedBy { get; set; }
+        public JsonElement SystemChangedBy { get; set; }
 
         [JsonPropertyName("System.Title")]
         public string SystemTitle { get; set; }
