@@ -9,6 +9,7 @@ using WebHooksDevOps.ViewModels;
 using JsonPatchDocument = Microsoft.VisualStudio.Services.WebApi.Patch.Json.JsonPatchDocument;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace WebHooksDevOps.Controllers
 {
@@ -48,8 +49,6 @@ namespace WebHooksDevOps.Controllers
         [Route("workitem/update")]
         public async Task<IActionResult> Post([FromBody] UpdateWorkItemModel vm)
         {
-            string tags = "";
-
             if (vm.EventType != "workitem.updated")
             {
                 return new OkResult();
@@ -59,8 +58,12 @@ namespace WebHooksDevOps.Controllers
             {
                 return new StatusCodeResult(500);
             }
-            var assignedToElement = vm.Resource.Fields["System.AssignedTo"].NewValue;
-            var assignedTo = assignedToElement.GetString();
+
+            //JsonElement o = JsonSerializer.Deserialize<JsonElement>();
+            //if (o.TryGetProperty("System.AssignedTo", out var Value))
+            //{
+            //}
+
             string teamProject = vm.Resource.Revision.Fields.SystemTeamProject.ToString();
             string iterationPath = vm.Resource.Revision.Fields.SystemIterationPath.ToString();
 
@@ -73,27 +76,29 @@ namespace WebHooksDevOps.Controllers
                         Value = "this was the updated by listener"
                     }
                 };
-
-            if (string.IsNullOrEmpty(assignedTo))
+            
+            if (vm.Resource.Fields.ContainsKey("System.AssignedTo"))
             {
+                var assignedToElement = vm.Resource.Fields["System.AssignedTo"].NewValue;
+                var assignedTo = assignedToElement.GetString();
                 patchDocument.Add(
-                    new JsonPatchOperation()
-                    {
-                        Operation = Operation.Replace,
-                        Path = "/fields/System.AssignedTo",
-                        Value = assignedTo
-                    }
+                new JsonPatchOperation()
+                {
+                    Operation = Operation.Replace,
+                    Path = "/fields/System.AssignedTo",
+                    Value = "Shahbaz Khan"
+                }
                 );
             }
 
             patchDocument.Add(
-                new JsonPatchOperation()
-                {
-                    Operation = Operation.Replace,
-                    Path = "/fields/System.IterationPath",
-                    Value = iterationPath
-                }
-            );
+            new JsonPatchOperation()
+            {
+                Operation = Operation.Replace,
+                Path = "/fields/System.IterationPath",
+                Value = "ADUP Request Portal\\Sprint 3"
+            }
+        );
 
 
             await WorkItemRepo.UpdateWorkItem(patchDocument, vm);
@@ -105,8 +110,6 @@ namespace WebHooksDevOps.Controllers
         [Route("workitem/new")]
         public async Task<IActionResult> Post([FromBody] CreateWorkItemModel vm)
         {
-            string tags = "";
-
             if (vm.EventType != "workitem.created")
             {
                 return new OkResult();
