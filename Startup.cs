@@ -27,7 +27,8 @@ namespace WebHooksDevOps
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers();// AddJsonOptions(opt=>opt.JsonSerializerOptions.NumberHandling=System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString);
+            //services.AddScoped<IWorkItemRepo, WorkItemRepo>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebHooksDevOps", Version = "v1" });
@@ -53,6 +54,7 @@ namespace WebHooksDevOps
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                //endpoints.MapDefaultControllerRoute();
             });
         }
     }
