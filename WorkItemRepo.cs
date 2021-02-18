@@ -12,10 +12,10 @@ using WorkItem = Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkIte
 
 namespace WebHooksDevOps
 {
-    public class WorkItemRepo/* : IWorkItemRepo*/
-    {
-        private IOptions<AppSettings> _appSettings;       
+    public class WorkItemRepo /*: IWorkItemRepo*/
+    {               
         static WorkItemTrackingHttpClient WitClient;
+        private readonly IOptions<AppSettings> _appSettings;
 
         public WorkItemRepo(IOptions<AppSettings> appSettings)
         {
@@ -26,9 +26,8 @@ namespace WebHooksDevOps
         {
             try
             {
-
                 // Uri baseUri = new Uri("");
-                string baseUri = "https://dev.azure.com/shabi9/";
+                string baseUri = _appSettings.Value.AzureDevOpsOrgUrl;
                 string pat = "jcs7a2xjaytizhlijntwfiwm6sgtp5uto4ppmw7bz67tcnm4cpna";
                 //string projectName = "";               
                 VssConnection connection = new VssConnection(new Uri(baseUri), new VssBasicCredential(string.Empty, pat));
@@ -72,6 +71,7 @@ namespace WebHooksDevOps
 
 
     }
+
 
     //public interface IWorkItemRepo
     //{
