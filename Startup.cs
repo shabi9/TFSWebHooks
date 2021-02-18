@@ -18,10 +18,11 @@ namespace WebHooksDevOps
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = configuration;            
         }
 
         public IConfiguration Configuration { get; }
+       
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -29,10 +30,12 @@ namespace WebHooksDevOps
 
             services.AddControllers();
             //services.AddScoped<IWorkItemRepo, WorkItemRepo>();
+            services.Configure<Models.AppSettings>(Configuration.GetSection("ConnectionStrings"));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebHooksDevOps", Version = "v1" });
             });
+            services.AddScoped<WorkItemRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
