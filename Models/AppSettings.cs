@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebHooksDevOps.ViewModels
+namespace WebHooksDevOps.Models
 {
     public class AppSettings
     {

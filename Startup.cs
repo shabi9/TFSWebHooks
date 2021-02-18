@@ -27,7 +27,7 @@ namespace WebHooksDevOps
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();// AddJsonOptions(opt=>opt.JsonSerializerOptions.NumberHandling=System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString);
+            services.AddControllers();
             //services.AddScoped<IWorkItemRepo, WorkItemRepo>();
             services.AddSwaggerGen(c =>
             {

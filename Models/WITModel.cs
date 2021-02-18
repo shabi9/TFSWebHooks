@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
-namespace WebHooksDevOps.ViewModels
+namespace WebHooksDevOps.Models
 {
 
     public class BaseWorkItemModel

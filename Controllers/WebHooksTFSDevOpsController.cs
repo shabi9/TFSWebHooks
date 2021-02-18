@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.Services.WebApi.Patch.Json;
 using Microsoft.VisualStudio.Services.WebApi.Patch;
-using WebHooksDevOps.ViewModels;
+using WebHooksDevOps.Models;
 using JsonPatchDocument = Microsoft.VisualStudio.Services.WebApi.Patch.Json.JsonPatchDocument;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
