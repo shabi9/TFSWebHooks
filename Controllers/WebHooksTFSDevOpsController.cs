@@ -47,25 +47,20 @@ namespace WebHooksDevOps.Controllers
 
         [HttpPost]
         [Route("workitem/update")]
-        public async Task<IActionResult> Post([FromBody] UpdateWorkItemModel vm)
+        public async Task<IActionResult> Post([FromBody] UpdateWorkItemModel wi)
         {
-            if (vm.EventType != "workitem.updated")
+            if (wi.EventType != "workitem.updated")
             {
                 return new OkResult();
             }
 
-            if (vm.Resource.WorkItemId == -1)
+            if (wi.Resource.WorkItemId == -1)
             {
                 return new StatusCodeResult(500);
             }
 
-            //JsonElement o = JsonSerializer.Deserialize<JsonElement>();
-            //if (o.TryGetProperty("System.AssignedTo", out var Value))
-            //{
-            //}
-
-            string teamProject = vm.Resource.Revision.Fields.SystemTeamProject.ToString();
-            string iterationPath = vm.Resource.Revision.Fields.SystemIterationPath.ToString();
+            string teamProject = wi.Resource.Revision.Fields.SystemTeamProject.ToString();
+            string iterationPath = wi.Resource.Revision.Fields.SystemIterationPath.ToString();
 
             JsonPatchDocument patchDocument = new JsonPatchDocument
                 {
@@ -77,9 +72,9 @@ namespace WebHooksDevOps.Controllers
                     }
                 };
             
-            if (vm.Resource.Fields.ContainsKey("System.AssignedTo"))
+            if (wi.Resource.Fields.ContainsKey("System.AssignedTo"))
             {
-                var assignedToElement = vm.Resource.Fields["System.AssignedTo"].NewValue;
+                var assignedToElement = wi.Resource.Fields["System.AssignedTo"].NewValue;
                 var assignedTo = assignedToElement.GetString();
                 patchDocument.Add(
                 new JsonPatchOperation()
@@ -101,27 +96,27 @@ namespace WebHooksDevOps.Controllers
         );
 
 
-            await WorkItemRepo.UpdateWorkItem(patchDocument, vm);
+            await WorkItemRepo.UpdateWorkItem(patchDocument, wi);
 
             return new OkResult();
 
         }
         [HttpPost]
         [Route("workitem/new")]
-        public async Task<IActionResult> Post([FromBody] CreateWorkItemModel vm)
+        public async Task<IActionResult> Post([FromBody] CreateWorkItemModel wi)
         {
-            if (vm.EventType != "workitem.created")
+            if (wi.EventType != "workitem.created")
             {
                 return new OkResult();
             }
 
-            if (vm.Resource.WorkItemId == -1)
+            if (wi.Resource.WorkItemId == -1)
             {
                 return new StatusCodeResult(500);
             }
-            string assignedTo = (string)vm.Resource.Fields["System.AssignedTo"].ToString();
-            string teamProject = vm.Resource.Revision.Fields.SystemTeamProject.ToString();
-            string iterationPath = vm.Resource.Revision.Fields.SystemIterationPath.ToString();
+            string assignedTo = (string)wi.Resource.Fields["System.AssignedTo"].ToString();
+            string teamProject = wi.Resource.Revision.Fields.SystemTeamProject.ToString();
+            string iterationPath = wi.Resource.Revision.Fields.SystemIterationPath.ToString();
 
             JsonPatchDocument patchDocument = new JsonPatchDocument
                 {
@@ -155,7 +150,7 @@ namespace WebHooksDevOps.Controllers
             );
 
 
-            await WorkItemRepo.CreateWorkItem(patchDocument, vm);
+            await WorkItemRepo.CreateWorkItem(patchDocument, wi);
 
             return new OkResult();
 
