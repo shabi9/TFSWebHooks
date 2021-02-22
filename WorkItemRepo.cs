@@ -40,12 +40,12 @@ namespace WebHooksDevOps
 
         }
 
-        public static async Task<WorkItem> CreateWorkItem(JsonPatchDocument patchDocument, CreateWorkItemModel wi)
+        public static async Task<WorkItem> CreateWorkItem(JsonPatchDocument patchDocument, CreateWorkItemModel vm)
         {
             try
             {
                 connectToTFS();
-                string projectName = wi.Resource.Revision.Fields.SystemTeamProject.ToString();
+                string projectName = vm.Resource.Revision.Fields.SystemTeamProject.ToString();
                 return await WitClient.CreateWorkItemAsync(patchDocument, projectName, "Epic");
             }
             catch (Exception ex)
@@ -54,13 +54,13 @@ namespace WebHooksDevOps
             }
 
         }
-        public static async Task<WorkItem> UpdateWorkItem(JsonPatchDocument patchDocument, UpdateWorkItemModel wi)
+        public static async Task<WorkItem> UpdateWorkItem(JsonPatchDocument patchDocument, UpdateWorkItemModel vm)
         {
             try
             {
                 connectToTFS();
-                string projectName = wi.Resource.Revision.Fields.SystemTeamProject.ToString();
-                return await WitClient.UpdateWorkItemAsync(patchDocument, (int)wi.Resource.WorkItemId);
+                string projectName = vm.Resource.Revision.Fields.SystemTeamProject.ToString();
+                return await WitClient.UpdateWorkItemAsync(patchDocument, (int)vm.Resource.WorkItemId);
             }
             catch (Exception ex)
             {
