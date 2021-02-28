@@ -29,7 +29,7 @@ namespace WebHooksDevOps
         {
 
             services.AddControllers();
-            //services.AddScoped<IWorkItemRepo, WorkItemRepo>();
+            services.AddScoped<IWorkItemRepo, WorkItemRepo>();
             services.Configure<Models.AppSettings>(Configuration.GetSection("ConnectionStrings"));
             services.AddSwaggerGen(c =>
             {

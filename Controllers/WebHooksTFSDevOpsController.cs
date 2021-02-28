@@ -24,12 +24,12 @@ namespace WebHooksDevOps.Controllers
 
         private readonly ILogger<WebHooksTFSDevOpsController> _logger;
         IOptions<AppSettings> _appSettings;
-        //IWorkItemRepo _workItemRepo;
-        public WebHooksTFSDevOpsController(ILogger<WebHooksTFSDevOpsController> logger, IOptions<AppSettings> appSettings/*, IWorkItemRepo WorkItemRepo*/)
+        IWorkItemRepo _workItemRepo;
+        public WebHooksTFSDevOpsController(ILogger<WebHooksTFSDevOpsController> logger, IOptions<AppSettings> appSettings, IWorkItemRepo workItemRepo)
         {
             _logger = logger;
             _appSettings = appSettings;
-            //_workItemRepo = WorkItemRepo;
+            _workItemRepo = workItemRepo;
         }
 
         [HttpGet]
@@ -101,7 +101,7 @@ namespace WebHooksDevOps.Controllers
         );
 
 
-            await WorkItemRepo.UpdateWorkItem(patchDocument, vm);
+            await _workItemRepo.UpdateWorkItem(patchDocument, vm);
 
             return new OkResult();
 
@@ -155,25 +155,11 @@ namespace WebHooksDevOps.Controllers
             );
 
 
-            await WorkItemRepo.CreateWorkItem(patchDocument, vm);
+            await _workItemRepo.CreateWorkItem(patchDocument, vm);
 
             return new OkResult();
 
         }
-        //private PayloadViewModel BuildPayloadViewModel(JObject body)
-        //{
-        //    PayloadViewModel vm = new PayloadViewModel();
-
-        //    vm.id = body["resource"]["id"] == null ? -1 : Convert.ToInt32(body["resource"]["id"].ToString());
-        //    vm.eventType = body["eventType"] == null ? null : body["eventType"].ToString();
-        //    vm.rev = body["resource"]["rev"] == null ? -1 : Convert.ToInt32(body["resource"]["rev"].ToString());
-        //    vm.url = body["resource"]["url"] == null ? null : body["resource"]["url"].ToString();
-        //    //vm.organization = org;
-        //    vm.teamProject = body["resource"]["fields"]["System.AreaPath"] == null ? null : body["resource"]["fields"]["System.AreaPath"].ToString();
-        //    vm.createdBy = body["resource"]["fields"]["System.CreatedBy"]["displayName"] == null ? null : body["resource"]["fields"]["System.CreatedBy"]["displayName"].ToString();
-        //    vm.assignedTo = body["resource"]["fields"]["System.AssignedTo"] == null ? null : body["resource"]["fields"]["System.Assigned"].ToString();
-
-        //    return vm;
-        //}        
+      
     }
 }
