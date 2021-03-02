@@ -10,6 +10,7 @@ using JsonPatchDocument = Microsoft.VisualStudio.Services.WebApi.Patch.Json.Json
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using System.Text.Json;
+using WebHooksDevOps.Services;
 
 namespace WebHooksDevOps.Controllers
 {
