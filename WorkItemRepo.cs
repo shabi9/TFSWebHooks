@@ -29,7 +29,7 @@ namespace WebHooksDevOps
 
                 // Uri baseUri = new Uri("");
                 string baseUri = "https://dev.azure.com/shabi9/";
-                string pat = "jcs7a2xjaytizhlijntwfiwm6sgtp5uto4ppmw7bz67tcnm4cpna";
+                string pat = "";
                 //string projectName = "";               
                 VssConnection connection = new VssConnection(new Uri(baseUri), new VssBasicCredential(string.Empty, pat));
                 WitClient = connection.GetClient<WorkItemTrackingHttpClient>();               
